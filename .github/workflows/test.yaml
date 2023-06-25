@@ -1,0 +1,24 @@
+﻿name: Guard Test
+
+on: [push]
+
+jobs:
+  kubevious_validation:
+    runs-on: ubuntu-latest
+    name: Kubevious CLI Validation Run
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Validation of manifest files
+        uses: kubevious/cli@v1.0.58
+        run: |
+          kubevious guard ./yaml/app.yaml
+          kubevious guard ./yaml/app-livenessProbe.yaml
+          kubevious guard ./yaml/app-readinessProbe.yaml
+          kubevious guard ./yaml/app-volumeMounts.yaml
+          kubevious guard ./yaml/app-cronjob.yaml
+          kubevious guard ./yaml/app-job.yaml
+          kubevious guard ./yaml/app-multicontainer.yaml
+          kubevious guard ./yaml/app-resources.yaml
+          kubevious guard ./yaml/app-secret-env.yaml
