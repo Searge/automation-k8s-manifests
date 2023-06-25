@@ -21,7 +21,6 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: kubevious/cli:latest
-          options: -v ./:/src
           run: |
             pwd; ls -lh 
             set -x
