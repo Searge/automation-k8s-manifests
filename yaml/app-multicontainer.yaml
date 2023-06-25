@@ -1,0 +1,122 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-front
+spec:
+  selector:
+    app: django-front
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8000
+    - name: solr
+      port: 8983
+      targetPort: 8983
+    - name: envoy
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-front
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: django-front
+  template:
+    metadata:
+      labels:
+        app: django-front
+    spec:
+      containers:
+        - name: django-front
+          image: django-front:latest
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: efs-volume
+              mountPath: /efs
+        - name: envoy
+          image: envoy:latest
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: efs-volume
+              mountPath: /efs
+      volumes:
+        - name: efs-volume
+          persistentVolumeClaim:
+            claimName: efs-claim
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: solr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: solr
+  serviceName: solr
+  template:
+    metadata:
+      labels:
+        app: solr
+    spec:
+      containers:
+        - name: solr
+          image: solr:latest
+          ports:
+            - containerPort: 8983
+          volumeMounts:
+            - name: efs-volume
+              mountPath: /efs
+      volumes:
+        - name: efs-volume
+          persistentVolumeClaim:
+            claimName: efs-claim
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mongodb
+  serviceName: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb-master
+          image: mongodb:latest
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: efs-volume
+              mountPath: /efs
+          env:
+            - name: MONGODB_ROLE
+              value: "master"
+        - name: mongodb-slave
+          image: mongodb:latest
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: efs-volume
+              mountPath: /efs
+          env:
+            - name: MONGODB_ROLE
+              value: "slave"
+      volumes:
+        - name: efs-volume
+          persistentVolumeClaim:
+            claimName: efs-claim

@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo-app-master
+spec:
+  containers:
+    - name: demo-app-master
+      image: demo-app-master:latest
+      volumeMounts:
+        - name: demo-app-data
+          mountPath: /data
+  volumes:
+    - name: demo-app-data
+      persistentVolumeClaim:
+        claimName: demo-app-data-pvc

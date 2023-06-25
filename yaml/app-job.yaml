@@ -1,0 +1,26 @@
+✨ Attempting to apply the following manifest:
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rsync-demo-app
+spec:
+  template:
+    spec:
+      containers:
+      - name: rsync
+        image: google/cloud-sdk:latest
+        command: ["sh", "-c", "rsync -avz /source/folder/ user@remote:/destination/folder/"]
+        volumeMounts:
+        - name: source-folder
+          mountPath: /source/folder/
+      restartPolicy: Never
+      volumes:
+      - name: source-folder
+        gcePersistentDisk:
+          pdName: demo-app-disk
+          fsType: ext4
+      imagePullSecrets:
+      - name: gcr-json-key
+    metadata:
+      name: rsync-demo-app
+  backoffLimit: 4

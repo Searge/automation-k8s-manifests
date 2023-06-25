@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: django-front-limits
+spec:
+  hard:
+    limits.cpu: "1"
+    limits.memory: 1Gi
+    requests.cpu: "500m"
+    requests.memory: 500Mi
