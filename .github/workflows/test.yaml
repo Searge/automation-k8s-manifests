@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  checkout_repo:
+  kubevious_validation_cli:
     runs-on: ubuntu-latest
-    name: Checkout repo
+    name: Kubevious CLI Validation Run
     steps:
       - name: Test environment
         run: |
@@ -36,15 +36,17 @@ jobs:
           kubevious guard ./yaml/app-resources.yaml
           kubevious guard ./yaml/app-secret-env.yaml
 
-  kubevious_validation:
+  kubevious_validation_docker:
     runs-on: ubuntu-latest
-    needs: checkout_repo
     name: Kubevious Docker Validation Run
     steps:
       - name: Test environment
         run: |
           pwd; ls -lha && echo "Running tests on the ${{ github.workspace }}"
           which docker
+
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Test manifests with Docker
         uses: docker://kubevious/cli:latest
