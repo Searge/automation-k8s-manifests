@@ -20,18 +20,20 @@ jobs:
       - name: Test manifests with Docker
         uses: docker://kubevious/cli:latest
         with:
-          args: -v ${{ github.workspace }}:/var/www
-          run: |
-            pwd; ls -lh 
-            set -x
-            ls -lha /src && ls -lha /src/*
-            find / -type f -name 'app.yaml' 2>/dev/null
-            # kubevious guard ./yaml/app.yaml
-            # kubevious guard ./yaml/app-livenessProbe.yaml
-            # kubevious guard ./yaml/app-readinessProbe.yaml
-            # kubevious guard ./yaml/app-volumeMounts.yaml
-            # kubevious guard ./yaml/app-cronjob.yaml
-            # kubevious guard ./yaml/app-job.yaml
-            # kubevious guard ./yaml/app-multicontainer.yaml
-            # kubevious guard ./yaml/app-resources.yaml
-            # kubevious guard ./yaml/app-secret-env.yaml
+          args: -v ${{ github.workspace }}:/src
+          
+      - name: Custom tests
+        run: |
+          pwd; ls -lh 
+          set -x
+          ls -lha /src && ls -lha /src/*
+          find / -type f -name 'app.yaml' 2>/dev/null
+          # kubevious guard ./yaml/app.yaml
+          # kubevious guard ./yaml/app-livenessProbe.yaml
+          # kubevious guard ./yaml/app-readinessProbe.yaml
+          # kubevious guard ./yaml/app-volumeMounts.yaml
+          # kubevious guard ./yaml/app-cronjob.yaml
+          # kubevious guard ./yaml/app-job.yaml
+          # kubevious guard ./yaml/app-multicontainer.yaml
+          # kubevious guard ./yaml/app-resources.yaml
+          # kubevious guard ./yaml/app-secret-env.yaml
