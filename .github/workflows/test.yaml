@@ -15,17 +15,27 @@ jobs:
   kubevious_validation:
     runs-on: ubuntu-latest
     needs: checkout_repo
-    name: Kubevious CLI Validation Run
+    name: Kubevious Docker Validation Run
     steps:
       - name: Test manifests with Docker
         uses: docker://kubevious/cli:latest
         with:
           args: -v ${{ github.workspace }}:/src
 
+  kubevious_validation_custom:
+    runs-on: ubuntu-latest
+    needs: checkout_repo
+    name: Kubevious CLI Validation Run
+    steps:
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.x'
+
       - name: Custom tests
         run: |
           pwd; ls -lha && echo "Running custom tests on the ${{ github.workspace }}"
-          alias kubevious="docker run --rm -v ${{ github.workspace }}:/src kubevious/cli:latest"
+          npm install -g kubevious
           set -x
           kubevious guard ./yaml/app.yaml
           kubevious guard ./yaml/app-livenessProbe.yaml
