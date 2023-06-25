@@ -1,17 +1,16 @@
-﻿name: Guard Test
+name: Guard Test
 
 on: [push]
 
 jobs:
   kubevious_validation:
     runs-on: ubuntu-latest
+    container:
+      image: kubevious/cli:latest
     name: Kubevious CLI Validation Run
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Validation of manifest files
-        uses: kubevious/cli@latest
         
       - name: Test manifests
         run: |
