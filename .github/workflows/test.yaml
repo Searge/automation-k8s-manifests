@@ -21,12 +21,12 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: kubevious/cli:latest
-          options: -v ${{ github.workspace }}:/mnt/data
+          options: -v ${{ github.workspace }}:/src
           run: |
             pwd; ls -lh 
-            ls -lh /mnt/data
+            set -x
+            ls -lha /src && ls -lha /app
             find / -type f -name 'app.yaml' 2>/dev/null
-            ls -lh /mnt/data/${{ github.workspace }}
             # kubevious guard ./yaml/app.yaml
             # kubevious guard ./yaml/app-livenessProbe.yaml
             # kubevious guard ./yaml/app-readinessProbe.yaml
