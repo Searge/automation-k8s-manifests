@@ -21,13 +21,15 @@ jobs:
           image: kubevious/cli:latest
           options: -v ${{ github.workspace }}:/mnt/data
           run: |
-            pwd; cd /mnt/data && pwd
-            kubevious guard ./yaml/app.yaml
-            kubevious guard ./yaml/app-livenessProbe.yaml
-            kubevious guard ./yaml/app-readinessProbe.yaml
-            kubevious guard ./yaml/app-volumeMounts.yaml
-            kubevious guard ./yaml/app-cronjob.yaml
-            kubevious guard ./yaml/app-job.yaml
-            kubevious guard ./yaml/app-multicontainer.yaml
-            kubevious guard ./yaml/app-resources.yaml
-            kubevious guard ./yaml/app-secret-env.yaml
+            pwd; ls -lh 
+            ls -lh /mnt/data
+            find / -type d -name 'yaml' 2>/dev/null
+            # kubevious guard ./yaml/app.yaml
+            # kubevious guard ./yaml/app-livenessProbe.yaml
+            # kubevious guard ./yaml/app-readinessProbe.yaml
+            # kubevious guard ./yaml/app-volumeMounts.yaml
+            # kubevious guard ./yaml/app-cronjob.yaml
+            # kubevious guard ./yaml/app-job.yaml
+            # kubevious guard ./yaml/app-multicontainer.yaml
+            # kubevious guard ./yaml/app-resources.yaml
+            # kubevious guard ./yaml/app-secret-env.yaml
