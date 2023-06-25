@@ -1,6 +1,8 @@
 name: Guard Test
 
-on: [push]
+on: 
+  push:
+  workflow_dispatch:
 
 jobs:
   checkout_repo:
@@ -23,7 +25,8 @@ jobs:
           run: |
             pwd; ls -lh 
             ls -lh /mnt/data
-            find / -type d -name 'yaml' 2>/dev/null
+            find / -type f -name 'app.yaml' 2>/dev/null
+            ls -lh /mnt/data/${{ github.workspace }}
             # kubevious guard ./yaml/app.yaml
             # kubevious guard ./yaml/app-livenessProbe.yaml
             # kubevious guard ./yaml/app-readinessProbe.yaml
