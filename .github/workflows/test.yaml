@@ -1,6 +1,6 @@
-name: Guard Test
+﻿name: Guard Test
 
-on: 
+on:
   push:
   workflow_dispatch:
 
@@ -21,19 +21,18 @@ jobs:
         uses: docker://kubevious/cli:latest
         with:
           args: -v ${{ github.workspace }}:/src
-          
+
       - name: Custom tests
         run: |
-          pwd; ls -lh 
+          pwd; ls -lha && echo "Running custom tests on the ${{ github.workspace }}"
+          alias kubevious="docker run --rm -v ${{ github.workspace }}:/src kubevious/cli:latest"
           set -x
-          ls -lha /src && ls -lha /src/*
-          find / -type f -name 'app.yaml' 2>/dev/null
-          # kubevious guard ./yaml/app.yaml
-          # kubevious guard ./yaml/app-livenessProbe.yaml
-          # kubevious guard ./yaml/app-readinessProbe.yaml
-          # kubevious guard ./yaml/app-volumeMounts.yaml
-          # kubevious guard ./yaml/app-cronjob.yaml
-          # kubevious guard ./yaml/app-job.yaml
-          # kubevious guard ./yaml/app-multicontainer.yaml
-          # kubevious guard ./yaml/app-resources.yaml
-          # kubevious guard ./yaml/app-secret-env.yaml
+          kubevious guard ./yaml/app.yaml
+          kubevious guard ./yaml/app-livenessProbe.yaml
+          kubevious guard ./yaml/app-readinessProbe.yaml
+          kubevious guard ./yaml/app-volumeMounts.yaml
+          kubevious guard ./yaml/app-cronjob.yaml
+          kubevious guard ./yaml/app-job.yaml
+          kubevious guard ./yaml/app-multicontainer.yaml
+          kubevious guard ./yaml/app-resources.yaml
+          kubevious guard ./yaml/app-secret-env.yaml
