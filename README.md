@@ -1,5 +1,7 @@
 # Automation k8s manifests
 
+[![Guard Test](https://github.com/Searge/automation-k8s-manifests/actions/workflows/test.yaml/badge.svg)](https://github.com/Searge/automation-k8s-manifests/actions/workflows/test.yaml)
+
 ## Prompts portfolio
 
 | NAME                    | PROMPT                                                                                                                | DESCRIPTION                             | EXAMPLE                                                                                                              |

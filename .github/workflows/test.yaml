@@ -21,10 +21,13 @@ jobs:
         with:
           node-version: "18.x"
 
+      - name: Install latest Kubevious CLI
+        run: |
+          npm install -g kubevious
+
       - name: Custom tests
         run: |
           pwd; ls -lha && echo "Running custom tests on the ${{ github.workspace }}"
-          npm install -g kubevious
           set -x
           kubevious guard ./yaml/app.yaml
           kubevious guard ./yaml/app-livenessProbe.yaml
