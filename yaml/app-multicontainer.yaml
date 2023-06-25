@@ -1,23 +1,4 @@
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: django-front
-spec:
-  selector:
-    app: django-front
-  ports:
-    - name: http
-      port: 80
-      targetPort: 8000
-    - name: solr
-      port: 8983
-      targetPort: 8983
-    - name: envoy
-      port: 8080
-      targetPort: 8080
-  type: LoadBalancer
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,27 +14,50 @@ spec:
         app: django-front
     spec:
       containers:
-        - name: django-front
-          image: django-front:latest
-          ports:
-            - containerPort: 8000
-          volumeMounts:
-            - name: efs-volume
-              mountPath: /efs
-        - name: envoy
-          image: envoy:latest
-          ports:
-            - containerPort: 8080
-          volumeMounts:
-            - name: efs-volume
-              mountPath: /efs
-      volumes:
-        - name: efs-volume
-          persistentVolumeClaim:
-            claimName: efs-claim
+      - name: django
+        image: django:onbuild
+        ports:
+        - containerPort: 8000
+      - name: envoy
+        image: envoyproxy/envoy:v1.73-latest
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+      - name: solr
+        image: solr:9.1
+        ports:
+        - containerPort: 8983
+      - name: mongo
+        image: mongo:7.0.0-rc5
+        ports:
+        - containerPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-front
+spec:
+  selector:
+    app: django-front
+  ports:
+  - name: django
+    port: 8000
+    targetPort: 8000
+  - name: envoy-http
+    port: 80
+    targetPort: 80
+  - name: envoy-https
+    port: 443
+    targetPort: 443
+  - name: solr
+    port: 8983
+    targetPort: 8983
+  - name: mongo
+    port: 27017
+    targetPort: 27017
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: solr
 spec:
@@ -61,62 +65,93 @@ spec:
   selector:
     matchLabels:
       app: solr
-  serviceName: solr
   template:
     metadata:
       labels:
         app: solr
     spec:
       containers:
-        - name: solr
-          image: solr:latest
-          ports:
-            - containerPort: 8983
-          volumeMounts:
-            - name: efs-volume
-              mountPath: /efs
-      volumes:
-        - name: efs-volume
-          persistentVolumeClaim:
-            claimName: efs-claim
+      - name: solr
+        image: solr:9.1
+        ports:
+        - containerPort: 8983
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: solr
+spec:
+  selector:
+    app: solr
+  ports:
+  - name: solr
+    port: 8983
+    targetPort: 8983
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: mongodb
+  name: mongo
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: mongodb
-  serviceName: mongodb
+      app: mongo
   template:
     metadata:
       labels:
-        app: mongodb
+        app: mongo
     spec:
       containers:
-        - name: mongodb-master
-          image: mongodb:latest
-          ports:
-            - containerPort: 27017
-          volumeMounts:
-            - name: efs-volume
-              mountPath: /efs
-          env:
-            - name: MONGODB_ROLE
-              value: "master"
-        - name: mongodb-slave
-          image: mongodb:latest
-          ports:
-            - containerPort: 27017
-          volumeMounts:
-            - name: efs-volume
-              mountPath: /efs
-          env:
-            - name: MONGODB_ROLE
-              value: "slave"
-      volumes:
-        - name: efs-volume
-          persistentVolumeClaim:
-            claimName: efs-claim
+      - name: mongo
+        image: mongo:7.0.0-rc5
+        ports:
+        - containerPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: mongo
+  ports:
+  - name: mongo
+    port: 27017
+    targetPort: 27017
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: envoy
+  template:
+    metadata:
+      labels:
+        app: envoy
+    spec:
+      containers:
+      - name: envoy
+        image: envoyproxy/envoy:v1.73-latest
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: envoy
+spec:
+  selector:
+    app: envoy
+  ports:
+  - name: envoy-http
+    port: 80
+    targetPort: 80
+  - name: envoy-https
+    port: 443
+    targetPort: 443

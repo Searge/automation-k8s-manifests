@@ -1,4 +1,4 @@
-✨ Attempting to apply the following manifest:
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
       - name: rsync
-        image: google/cloud-sdk:latest
+        image: google/cloud-sdk:275.0.0-alpine
         command: ["sh", "-c", "rsync -avz /source/folder/ user@remote:/destination/folder/"]
         volumeMounts:
         - name: source-folder
