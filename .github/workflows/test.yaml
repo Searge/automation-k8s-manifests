@@ -5,8 +5,6 @@ on: [push]
 jobs:
   checkout_repo:
     runs-on: ubuntu-latest
-    container:
-      image: kubevious/cli:latest
     name: Checkout repo
     steps:
       - name: Checkout
