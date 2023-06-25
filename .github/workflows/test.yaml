@@ -18,9 +18,9 @@ jobs:
     name: Kubevious CLI Validation Run
     steps:
       - name: Test manifests with Docker
-        uses: addnab/docker-run-action@v3
+        uses: docker://kubevious/cli:latest
         with:
-          image: kubevious/cli:latest
+          args: -v ${{ github.workspace }}:/var/www
           run: |
             pwd; ls -lh 
             set -x
