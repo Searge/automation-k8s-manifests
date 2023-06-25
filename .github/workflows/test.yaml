@@ -9,28 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     name: Checkout repo
     steps:
+      - name: Test environment
+        run: |
+          pwd; ls -lha && echo "Running tests on the ${{ github.workspace }}"
+
       - name: Checkout
         uses: actions/checkout@v3
 
-  kubevious_validation:
-    runs-on: ubuntu-latest
-    needs: checkout_repo
-    name: Kubevious Docker Validation Run
-    steps:
-      - name: Test manifests with Docker
-        uses: docker://kubevious/cli:latest
-        with:
-          args: -v ${{ github.workspace }}:/src
-
-  kubevious_validation_custom:
-    runs-on: ubuntu-latest
-    needs: checkout_repo
-    name: Kubevious CLI Validation Run
-    steps:
       - name: Use Node.js 18.x
         uses: actions/setup-node@v2
         with:
-          node-version: '18.x'
+          node-version: "18.x"
 
       - name: Custom tests
         run: |
@@ -46,3 +35,18 @@ jobs:
           kubevious guard ./yaml/app-multicontainer.yaml
           kubevious guard ./yaml/app-resources.yaml
           kubevious guard ./yaml/app-secret-env.yaml
+
+  kubevious_validation:
+    runs-on: ubuntu-latest
+    needs: checkout_repo
+    name: Kubevious Docker Validation Run
+    steps:
+      - name: Test environment
+        run: |
+          pwd; ls -lha && echo "Running tests on the ${{ github.workspace }}"
+          which docker
+
+      - name: Test manifests with Docker
+        uses: docker://kubevious/cli:latest
+        with:
+          args: -v ${{ github.workspace }}:/src
